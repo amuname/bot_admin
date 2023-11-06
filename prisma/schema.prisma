@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  tg_user_id       Int               @id
+  tg_name          String
+  created_at       DateTime          @default(now())
+  disabled         Boolean
+  tg_data          Json
+  phoneNumber      String?
+  parserBotId      Int?
+  chatState        AdminChatState    @default(NONE)
+  activeChannels   ActiveChannel[]
+  ParserBot        ParserBot?        @relation(fields: [parserBotId], references: [id])
+  configs          ChannelConfig[]
+  InvitationalUUID InvitationalUUID?
+  found_posts      TelegramPost[]
+  channel          Channel[]         @relation("AdminToChannel")
+}
+
+model Channel {
+  channel_url         String         @id @unique
+  lastMessageId       Int?
+  is_private          Boolean?
+  is_avalible_to_read Boolean?
+  config              ChannelConfig?
+  ParserTask          ParserTask?
+  TelegramPost        TelegramPost[]
+  admins              Admin[]        @relation("AdminToChannel")
+}
+
+model ChannelConfig {
+  id              Int            @id @default(autoincrement())
+  keywords        String
+  is_active       Boolean
+  adminId         Int
+  channelId       String         @unique
+  activeChannelId Int?
+  activeChannel   ActiveChannel? @relation(fields: [activeChannelId], references: [id])
+  admin           Admin          @relation(fields: [adminId], references: [tg_user_id])
+  channel         Channel        @relation(fields: [channelId], references: [channel_url])
+}
+
+model TelegramPost {
+  id         Int     @id @default(autoincrement())
+  tg_post_id String
+  post_data  String
+  channelId  String
+  adminId    Int
+  Admin      Admin   @relation(fields: [adminId], references: [tg_user_id])
+  channel    Channel @relation(fields: [channelId], references: [channel_url])
+}
+
+model InvitationalUUID {
+  id               String @id @default(uuid())
+  admin_tg_user_id Int    @unique
+  admin            Admin  @relation(fields: [admin_tg_user_id], references: [tg_user_id])
+}
+
+model ParserTask {
+  id        Int             @id @default(autoincrement())
+  channelId String          @unique
+  state     ParserTaskState @default(SCHEDULED)
+  Channel   Channel         @relation(fields: [channelId], references: [channel_url])
+}
+
+model ActiveChannel {
+  id      Int             @unique
+  adminId Int
+  admin   Admin           @relation(fields: [adminId], references: [tg_user_id])
+  configs ChannelConfig[]
+}
+
+model ParserBot {
+  id    Int     @id @default(autoincrement())
+  Admin Admin[]
+}
+
+enum AdminChatState {
+  NONE
+  REGISTER_USER_IN_WEB_TG
+  REGISTER_USER_IN_WEB_TG_BY_QR_CODE
+  REGISTER_USER_IN_WEB_TG_VERIFY_CODE
+  ADD_CHANEL
+  ADD_CHANEL_CONFIG
+}
+
+enum ParserTaskState {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+}
