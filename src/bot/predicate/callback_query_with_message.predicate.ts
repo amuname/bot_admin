@@ -1,4 +1,5 @@
-import { Update } from 'telegraf/types';
+import { Update, Message } from 'telegraf/types';
+// import { CallbackQuery }
 import Context from 'telegraf/typings/context';
 
 // export type ContextUpdateWithMesssageWithText= Context<Update> & { message: { text: 'string' } };
@@ -6,11 +7,11 @@ import Context from 'telegraf/typings/context';
 //     return (ctx as ContextUpdateWithMesssageWithText).message.text !== undefined
 // }
 
-export function predicateChannelPostText(
-  message: Context<Update>['channelPost'],
-): message is Context<Update>['channelPost'] & { text: 'string' } {
+export function predicateCallbackQueryWithMessage(
+  message: Context<Update>['callbackQuery'],
+): message is Context<Update>['callbackQuery'] & { message: Message } {
   return (
-    (message as Context<Update>['channelPost'] & { text: 'string' }).text !==
-    undefined
+    (message as Context<Update>['callbackQuery'] & { message: Message })
+      .message !== undefined
   );
 }

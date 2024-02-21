@@ -9,5 +9,8 @@ import Context from 'telegraf/typings/context';
 export function predicateMessageWithText(
   message: Context<Update>['message'],
 ): message is Context<Update>['message'] & { text: 'string' } {
-  return (message as { text: 'string' }).text !== undefined;
+  return (
+    (message as Context<Update>['message'] & { text: 'string' }).text !==
+    undefined
+  );
 }

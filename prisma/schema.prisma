@@ -26,6 +26,7 @@ model Admin {
 
 model Channel {
   channel_url         String         @id @unique
+  alias_id            Int            @default(autoincrement())
   lastMessageId       Int?
   is_private          Boolean?
   is_avalible_to_read Boolean?
@@ -41,7 +42,7 @@ model ChannelConfig {
   is_active       Boolean
   adminId         Int
   channelId       String         @unique
-  activeChannelId Int?
+  activeChannelId String?
   activeChannel   ActiveChannel? @relation(fields: [activeChannelId], references: [id])
   admin           Admin          @relation(fields: [adminId], references: [tg_user_id])
   channel         Channel        @relation(fields: [channelId], references: [channel_url])
@@ -71,10 +72,12 @@ model ParserTask {
 }
 
 model ActiveChannel {
-  id      Int             @unique
-  adminId Int
-  admin   Admin           @relation(fields: [adminId], references: [tg_user_id])
-  configs ChannelConfig[]
+  id              String          @unique
+  channelTitle    String?
+  channelUserName String?
+  adminId         Int
+  admin           Admin           @relation(fields: [adminId], references: [tg_user_id])
+  configs         ChannelConfig[]
 }
 
 model ParserBot {
@@ -89,6 +92,8 @@ enum AdminChatState {
   REGISTER_USER_IN_WEB_TG_VERIFY_CODE
   ADD_CHANEL
   ADD_CHANEL_CONFIG
+  SELECT_CHANNEL
+  SELECT_CHANNEL_SOURCES
 }
 
 enum ParserTaskState {

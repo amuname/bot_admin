@@ -109,22 +109,26 @@ export async function on_messageAndEditedMessage(bot: Telegraf) {
         case 'REGISTER_USER_IN_WEB_TG_BY_QR_CODE':
           //  тут нет логики потому что будет обрабатываться в bot.url
           break;
-        case 'ADD_CHANEL_CONFIG':
-          if (!predicateMessageWithText(ctx.message)) return;
-          const [channel_url, channel_tags] = ctx.message.text.split('|');
-          if (!(channel_url && channel_tags)) return ctx.reply(phrases[20]);
-          const config_data = await prismaCreateAdminChannelConfig(
-            ctx.message.from.id,
-            channel_url,
-            channel_tags,
-            true,
-          );
-          await prismaSetUserState(ctx.message.from.id, 'NONE');
-          if (config_data) {
-            return ctx.reply(phrases[21]);
-          }
-          ctx.reply(phrases[22]);
-          break;
+        // case 'ADD_CHANEL_CONFIG':
+        //   if (!predicateMessageWithText(ctx.message)) return;
+        //   const [channel_url, channel_tags] = ctx.message.text.split('|');
+        //   if (!(channel_url && channel_tags)) return ctx.reply(phrases[20]);
+        //   const config_data = await prismaCreateAdminChannelConfig(
+        //     ctx.message.from.id,
+        //     channel_url.trim(),
+        //     channel_tags.trim(),
+        //     true,
+        //   );
+        //   await prismaSetUserState(ctx.message.from.id, 'NONE');
+        //   if (config_data) {
+        //     return ctx.reply(phrases[21]);
+        //   }
+        //   ctx.reply(phrases[22]);
+        //   break;
+        // case 'SELECT_CHANNEL':
+        //   if (!predicateMessageWithText(ctx.message)) return;
+        //   const channels
+        //   break;
       }
       return;
     }
@@ -152,7 +156,7 @@ export async function on_messageAndEditedMessage(bot: Telegraf) {
       //     web_app: { url: 'asd' },
       // })
     } else {
-      ctx.reply(phrases[24]);
+      ctx.reply(phrases[30]);
     }
   });
 }

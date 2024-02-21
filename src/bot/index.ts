@@ -25,6 +25,9 @@ import { on_messageAndEditedMessage } from './handlers/on/on.message_and_edited_
 import { command_registerUserInWebTgByQrCode } from './handlers/command/command.register_user_in_web_tg_by_qr_code';
 import { command_isBotLogged } from './handlers/command/command.is_bot_logged';
 import { command_getInvitationalCode } from './handlers/command/command.get_invitational_code';
+import { command_selectChannel } from './handlers/command/command.select_channel';
+import { action_selectChannel } from './handlers/action/action.select_channel';
+import { action_selectChannelSources } from './handlers/action/action.select_channel_sources';
 
 // const IS_PROD = process.env.environment == 'PRODUCTION';
 
@@ -46,6 +49,9 @@ export const bot = new Telegraf(BOT_TOKEN);
   command_isBotLogged,
   command_addChannelConfig,
   command_getInvitationalCode,
+  command_selectChannel,
+  action_selectChannel,
+  action_selectChannelSources,
   url_regexpTMe,
   on_messageAndEditedMessage,
   on_channelPost,

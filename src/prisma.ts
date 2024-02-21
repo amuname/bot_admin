@@ -99,14 +99,21 @@ export function prismaCreateAdminChannel(
   });
 }
 
-export function prismaFindUnique(tg_id: number) {
+export function prismaFindUnique(
+  tg_id: number,
+  activeChannels = false,
+  channel = false,
+) {
   return prisma.admin.findUnique({
     where: {
       tg_user_id: tg_id,
     },
-    include: {
+    select: {
       InvitationalUUID: true,
       ParserBot: true,
+      activeChannels,
+      channel,
+      chatState: true,
     },
   });
 }
@@ -169,14 +176,18 @@ export function prismaFindUserByInvitational(inviteUUID: string) {
 }
 
 export function prismaCreateActiveChannel(
-  activeChannelId: number,
+  activeChannelId: string,
   adminId: number,
+  title: string,
+  username: string,
 ) {
   return prisma.activeChannel.upsert({
     where: {
       id: activeChannelId,
     },
     update: {
+      channelTitle: title,
+      channelUserName: username,
       admin: {
         connect: {
           tg_user_id: adminId,
@@ -192,4 +203,42 @@ export function prismaCreateActiveChannel(
       },
     },
   });
+}
+
+export function getChannelWithConfigByChannelId(channel_id: string) {
+  return prisma.channel.findUnique({
+    where: {
+      channel_url: channel_id,
+    },
+    include: {
+      config: true,
+    },
+  });
+}
+
+export async function connectConfigToActiveChannelByChannelId(
+  channel_id: string,
+  active_channel_id: string,
+) {
+  const channel = await getChannelWithConfigByChannelId(channel_id);
+
+  const config_id = channel.config.id;
+
+  return prisma.channelConfig.update({
+    where: {
+      id: config_id,
+    },
+    data: {
+      activeChannel: {
+        connect: {
+          id: active_channel_id,
+        },
+      },
+    },
+  });
+}
+
+export function createParserTaskWithChannelId(channel_id: string) {
+  // TODO подумать над проверкой что
+  return prisma.parserTask.create
 }
